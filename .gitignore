@@ -1,0 +1,7 @@
+build/
+.idea/
+**/.idea/
+.DS_Store
+**/.DS_Store
+.vscode/
+**/build/
