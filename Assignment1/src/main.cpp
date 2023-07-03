@@ -30,20 +30,38 @@ Eigen::Matrix4f get_model_matrix(float rotation_angle) {
 
 Eigen::Matrix4f get_projection_matrix(float eye_fov, float aspect_ratio,
                                       float zNear, float zFar) {
-  Eigen::Matrix4f psp2oto, orthographic;
+  // Eigen::Matrix4f psp2oto, orthographic;
 
-  // 左手系，需要重新推
-  psp2oto << -zNear, 0, 0, 0, 0, -zNear, 0, 0, 0, 0, -(zFar + zNear), zNear * zFar,
-      0, 0, 1, 0;
-  // Half of
-  float height = zNear * std::tan(eye_fov / 2.0 / 180.0 * MY_PI);
-  float weight = height * aspect_ratio;
-  Eigen::Matrix4f trans, scale;
-  trans << 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, (zNear + zFar) / 2.0, 0, 0, 0, 1;
-  scale << 1.0 / weight, 0, 0, 0, 0, 1.0 / height, 0, 0, 0, 0,
-      2.0 / (zFar - zNear), 0, 0, 0, 0, 1;
-  orthographic = scale * trans;
-  return orthographic * psp2oto;
+  // // 左手系，需要重新推
+  // psp2oto << -zNear, 0, 0, 0, 0, -zNear, 0, 0, 0, 0, -(zFar + zNear), zNear * zFar,
+  //     0, 0, 1, 0;
+  // // Half of
+  // float height = zNear * std::tan(eye_fov / 2.0 / 180.0 * MY_PI);
+  // float weight = height * aspect_ratio;
+  // Eigen::Matrix4f trans, scale;
+  // trans << 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, (zNear + zFar) / 2.0, 0, 0, 0, 1;
+  // scale << 1.0 / weight, 0, 0, 0, 0, 1.0 / height, 0, 0, 0, 0,
+  //     2.0 / (zFar - zNear), 0, 0, 0, 0, 1;
+  // orthographic = scale * trans;
+    float tan_half_fov = std::tan(eye_fov / 2.0f / 180.0f * MY_PI);
+    float top = zNear * tan_half_fov;
+    float right = top * aspect_ratio;
+
+    Eigen::Matrix4f p2o, trans, scale;
+    p2o << -zNear, 0, 0, 0,
+            0, -zNear, 0, 0,
+            0, 0, -zFar - zNear, -zNear * zFar,
+            0, 0, 1, 0;
+    trans << 1, 0, 0, 0,
+            0, 1, 0, 0,
+            0, 0, 1, (zNear + zFar) / 2.0f,
+            0, 0, 0, 1;
+    scale << 1.0f / right, 0, 0, 0,
+            0, 1.0f / top, 0, 0,
+            0, 0, 2.0f / (zFar - zNear), 0,
+            0, 0, 0, 1;
+    return scale * trans * p2o;
+  // return orthographic * psp2oto;
 }
 
 int main(int argc, const char **argv) {
