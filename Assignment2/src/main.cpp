@@ -40,15 +40,17 @@ Eigen::Matrix4f get_projection_matrix(float eye_fov, float aspect_ratio,
     Eigen::Matrix4f p2o, trans, scale;
     p2o << -zNear, 0, 0, 0,
             0, -zNear, 0, 0,
-            0, 0, -zFar - zNear, -zNear * zFar,
+            0, 0, - zFar - zNear, -zNear * zFar,
             0, 0, 1, 0;
     trans << 1, 0, 0, 0,
             0, 1, 0, 0,
             0, 0, 1, (zNear + zFar) / 2.0f,
             0, 0, 0, 1;
+
+    // Flip Z axis
     scale << 1.0f / right, 0, 0, 0,
             0, 1.0f / top, 0, 0,
-            0, 0, 2.0f / (zFar - zNear), 0,
+            0, 0, 2.0f / -(zFar - zNear), 0,
             0, 0, 0, 1;
     return scale * trans * p2o;
 }
